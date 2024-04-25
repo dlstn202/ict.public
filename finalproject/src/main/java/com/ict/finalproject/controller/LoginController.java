@@ -20,7 +20,7 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class LoginController {
-
+ 
     @Autowired
 	MemberMapper member_dao;
 	
