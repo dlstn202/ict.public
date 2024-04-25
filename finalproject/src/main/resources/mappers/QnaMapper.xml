@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ict.finalproject.dao.QnaMapper">
+
+    <insert id="insert" parameterType="qna">
+        insert into qna values(
+        null,#{mem_idx},#{qna_title},#{qna_content},now(),'답변대기',
+        #{qna_email},#{qna_tel},#{qna_name},#{qna_tos_yn},#{qna_section},
+        'n',null,'n',null
+        )
+    </insert>
+
+    <select id="selectListMap" resultMap="qna_map">
+        select * from
+        (
+            select *,rank() over(order by qna_idx desc) as no from qna
+            <trim prefix="where" prefixOverrides="or">
+                <if test="mem_idx!=null">
+                    mem_idx = #{mem_idx}
+                </if>
+                <if test="name!=null">
+                    qna_name like concat('%',#{name},'%')
+                </if>
+                <if test="subject!=null">
+                    or qna_title like concat('%',#{subject},'%')
+                </if>
+                <if test="content!=null">
+                    or qna_content like concat('%',#{content},'%')
+                </if>
+            </trim>
+
+            
+        ) b
+        where no between #{start} and #{end}
+    </select>
+
+    <resultMap type="qna" id="qna_map">
+		<result property="qna_idx" column="qna_idx"/> 
+		
+		<collection property="answer" 
+					column="qna_idx=qna_idx"
+					select="answer_qna_idx"/>
+	</resultMap>
+
+	<select id="answer_qna_idx" resultType="answer">
+		select * from answer where qna_idx = #{qna_idx}
+	</select>
+
+	<select id="selectRowTotal" parameterType="Map" resultType="int">
+		select ifnull(count(*),0) from qna
+		<trim prefix="where" prefixOverrides="or">
+          <if test="mem_idx!=null">
+             mem_idx = #{mem_idx}
+          </if>
+		  <if test="name!=null">
+            qna_name like concat('%',#{name},'%')
+		  </if>
+		  <if test="subject!=null">
+			  or qna_title like concat('%',#{subject},'%')
+		  </if>
+		  <if test="content!=null">
+			  or qna_content like concat('%',#{content},'%')
+		  </if>	  
+	  </trim>
+	</select>
+
+    <update id="update_condition" parameterType="int">
+        update qna set
+        qna_condition = '답변완료'
+        where qna_idx = #{qna_idx}
+    </update>
+
+
+</mapper>

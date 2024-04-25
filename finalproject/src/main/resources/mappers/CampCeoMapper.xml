@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ict.finalproject.dao.CampCeoMapper">
+
+
+	<select id="selectOne" parameterType="int" resultType="camp_ceo">
+		select * from camp_ceo where mem_idx = #{ mem_idx }
+	</select>
+
+	<select id="selectLisIdxRoom" parameterType="int" resultMap="camp_ceo_map">
+		select * from camp_ceo where mem_idx = #{ mem_idx }
+	</select>
+
+	<select id="selectListRev" parameterType="int" resultMap="camp_map_rev">
+		select * from camp_ceo where mem_idx = #{ mem_idx }
+	</select>
+
+	<select id="selectListRevOld" parameterType="int" resultMap="camp_map_rev_old">
+		select * from camp_ceo where mem_idx = #{ mem_idx }
+	</select>
+
+	<resultMap type="camp_ceo" id="camp_map_rev">
+		<result property="bizrno" column="bizrno"/> 
+		
+		<collection property="res_list" 
+					column="bizrno=bizrno"
+					select="res_list_bizrno"/>
+	</resultMap>
+
+	<select id="res_list_bizrno" resultType="reservation">
+		select * from reservation where bizrno = #{bizrno}
+		AND (res_checkindate &gt;= CURRENT_DATE OR res_checkoutdate &gt;= CURRENT_DATE)
+		ORDER BY res_checkindate asc
+	</select>
+
+	<resultMap type="camp_ceo" id="camp_map_rev_old">
+		<result property="bizrno" column="bizrno"/> 
+		
+		<collection property="res_list" 
+					column="bizrno=bizrno"
+					select="res_list_bizrno_old"/>
+	</resultMap>
+
+	<select id="res_list_bizrno_old" resultType="reservation">
+		select * from reservation where bizrno = #{bizrno}
+		AND (res_checkindate &lt; CURRENT_DATE OR res_checkoutdate &lt; CURRENT_DATE)
+		ORDER BY res_checkindate desc
+	</select>
+
+	<resultMap type="camp_ceo" id="camp_ceo_map">
+		<result property="bizrno" column="bizrno"/> 
+		
+		<collection property="room_list" 
+					column="bizrno=bizrno"
+					select="room_list_bizrno"/>
+	</resultMap>
+
+	<select id="room_list_bizrno" resultMap="room_map">
+		select * from room where bizrno = #{bizrno}
+	</select>
+
+	<resultMap type="room" id="room_map">
+		<result property="room_idx" column="room_idx"/> 
+		
+		<collection property="photo_list" 
+					column="room_idx=room_idx"
+					select="photo_list_room_idx"/>
+	</resultMap>
+
+	<select id="photo_list_room_idx" resultType="photo">
+		select * from photo where room_idx = #{room_idx}
+	</select>
+
+
+
+    <insert id="insertCampCeo" useGeneratedKeys="true" keyProperty="mem_idx" parameterType="camp_ceo">
+		insert into camp_ceo ( mem_idx, bizrno )
+		values( #{ mem_idx },
+				#{ bizrno }
+		)
+	</insert>
+
+	<delete id="deleteCampCeo" parameterType="int">
+		delete from camp_ceo where mem_idx = #{ mem_idx }
+	</delete>
+
+    <!-- 사업자번호 검색 -->
+	<select id="selectOneBizrno" parameterType="String" resultType="String">
+		select bizrno from camp_ceo where bizrno = #{ bizrno }
+	</select>
+
+
+</mapper>

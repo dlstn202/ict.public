@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ict.finalproject.dao.ReservationMapper">
+
+    <!-- idx 얻어오기 -->
+	<!-- <select id="res_idx">
+		select ifnull(max(res_idx),0)+1 from reservation
+	</select> -->
+
+
+	<select id="selectOneIdx" parameterType="java.lang.Long" resultType="reservation">
+		select * from reservation where res_idx = #{res_idx}
+	</select>
+
+	<select id="selectMemIdx" parameterType="int" resultType="reservation">
+		select *, DATEDIFF(res_checkindate, CURDATE()) as dday from reservation where mem_idx = #{mem_idx} order by res_idx desc 
+	</select>
+
+	<select id="selectResList" parameterType="int" resultType="reservation">
+		SELECT *
+        FROM reservation
+        WHERE res_checkindate &gt;= CURDATE() AND res_checkindate &lt;= DATE_ADD(CURDATE(), INTERVAL 3 MONTH)
+        and res_can_yn = 'n' and room_idx = #{room_idx}
+	</select>
+
+    <select id="selectRes" parameterType="reservation" resultType="reservation">
+        SELECT * FROM reservation
+        WHERE room_idx = #{room_idx}
+        AND (res_checkindate &lt;= #{res_checkindate} AND res_checkoutdate &gt;= #{res_checkindate})
+        and res_can_yn = 'n'
+    </select>
+
+    <insert id="insert" parameterType="reservation">
+        insert into reservation values(
+        #{res_idx},#{contentId},#{bizrno},#{mem_idx},#{facltNm},now(),null,#{res_checkindate},
+        #{res_checkoutdate},#{res_stayday},#{res_peopleadult},#{res_peoplechild},
+        #{res_peopletoddler},#{animalCmgCl},#{room_name},#{room_idx},#{mem_name},#{mem_tel},
+        #{mem_email},#{res_request},#{res_use_agree_yn},#{res_can_cagree_yn},
+        'n',null,null,null,null,null,'n',null,null,null,null,null,null,null
+        )
+
+    </insert>
+
+    <update id="updateToss" parameterType="reservation">
+        update reservation set
+        res_payment_type = #{res_payment_type},res_supply_price = #{res_supply_price},
+        res_vat = #{res_vat},res_payment = #{res_payment},res_payment_result = #{res_payment_result},
+        paymentKey = #{paymentKey},res_paymentdate = #{res_paymentdate},receipt = #{receipt},res_payment_result = '예약완료',
+        res_can_yn = 'n'
+        where res_idx = #{res_idx}
+
+    </update>
+
+    <update id="cancelUpate" parameterType="reservation">
+        update reservation set
+        res_payment_result = '예약취소',res_can_yn = 'y',res_candate=now(),res_can_reason='단순변심',
+        res_can_payment = #{res_can_payment},res_can_supply_price=#{res_can_supply_price},res_can_vat=#{res_can_vat}
+        where res_idx = #{res_idx}
+
+    </update>
+
+    <delete id="deleteNoPayment">
+        delete from reservation where res_paymentdate is null
+    </delete>
+
+    <update id="updateCheckout">
+        update reservation set
+        res_check = 'y'
+        where res_can_yn = 'n' and res_checkoutdate &lt; CURRENT_DATE
+    </update>
+
+
+
+
+</mapper>

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ict.finalproject.dao.MemberCeoMapper">
+
+   <select id="selectList" parameterType="member">
+		select * from mem_ceo_view
+	</select>
+
+   <insert id="insertCeo" useGeneratedKeys="true" keyProperty="mem_idx" parameterType="member">
+      insert into member_ceo ( mem_idx, agree1_yn, agree2_yn, agree3_yn )
+      values( #{ mem_idx }, 
+            #{ agree1_yn }, 
+            #{ agree2_yn }, 
+            #{ agree3_yn } 
+      )
+   </insert>
+
+
+   <update id="updateCeo" parameterType="member">
+      update member_ceo set
+         agree3_yn = #{ agree3_yn }
+      where mem_idx = #{ mem_idx }
+   </update>
+
+   <!-- <delete id="deleteCeo" parameterType="int">
+      delete from member_ceo where mem_idx = #{ mem_idx }
+   </delete> -->
+
+   <select id="selectCampCeosByMemberIdx" resultMap="CampCeoMap">
+      SELECT mem_idx, bizrno
+      FROM camp_ceo
+      WHERE mem_idx = #{mem_idx}
+   </select>
+    
+    <resultMap id="CampCeoMap" type="camp_ceo">
+       <id property="mem_idx" column="mem_idx"/>
+       <result property="bizrno" column="bizrno"/>
+       <collection property="camps" javaType="camp" ofType="camp" column="bizrno" select="selectCampByBizrno"/>
+    </resultMap>
+    
+    <select id="selectCampByBizrno" resultMap="CampResultMap">
+        SELECT *
+        FROM camp
+        WHERE bizrno = #{bizrno}
+    </select>
+   
+    <!-- photo_list -->
+    <select id="selectPhotosByBizrno" resultType="photo">
+      SELECT *
+      FROM photo
+      WHERE bizrno = #{bizrno} and pho_del_yn='n'
+      
+  </select>
+
+
+ <!-- photo_list -->
+   <resultMap id="CampResultMap" type="camp">
+      <result property="bizrno" column="bizrno"/>
+      <collection property="photo_list" ofType="photo" column="bizrno" select="selectPhotosByBizrno"/>
+   </resultMap>
+  
+   <!-- <resultMap id="CampResultMap" type="camp">
+      <result property="bizrno" column="bizrno"/>
+   </resultMap>
+   -->
+
+
+</mapper>

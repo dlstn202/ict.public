@@ -1,0 +1,36 @@
+@charset "utf-8"; 
+
+.grid-item img {display: block; min-width:100%; max-width: 100%;}
+
+/* story container */
+.story_bigwrap{ width: 1050px; min-height: 1000px; margin: auto; display: flex; }
+.story_wrap{ width: 500px; min-height: 1000px; margin-bottom: 50px; display: inline-block; }
+.storybox{ width: 470px; min-height: 400px; display: inline-block; margin-bottom: 20px; border-radius: 3px; overflow: hidden; border: 1px solid #003A1B;}
+.story_photo{ width: 100%; height: auto; margin: auto; position: relative; margin-bottom: 20px; overflow: hidden; }
+.story_photo > img{ width: 100%; height: auto; }
+.story_title{ margin-left: 15px; margin-right: 15px; margin-bottom: 14px; font-size: 20px; font-weight: bold; color: rgba(var(--main-ton-down-rgb),1); }
+.story_content{ margin-left: 15px; margin-right: 15px; color: rgba(var(--main-ton-down-rgb),1); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 5; overflow: hidden; line-height: 1.5; }
+.story_content.expanded { -webkit-line-clamp: unset; overflow: visible; }
+.show_all{ margin-right: 15px; text-align: right; margin-bottom: 2px; color: rgba(var(--main-ton-down-rgb),1);  }
+.stroy_writer_date{ display: flex; justify-content: space-between; color: rgba(var(--main-ton-down-rgb),1); }
+.story_writer{ margin-left: 15px; margin-bottom: 10px; display: inline-block; }
+.story_date{ margin-right: 15px; display: inline-block; position: relative; }
+
+/* story filter button */
+.story_filterwrap{ width: 880px; height: 60px; margin: auto; margin-top: 12rem; }
+.story_filter{ color: rgba(var(--main-ton-down-rgb),1); height: 50px; width: 110px; float: right;} 
+
+
+/* header */
+/* glamping-N10 [kBltWpi1Dg] */
+.glamping-N10 { overflow: hidden; }
+.glamping-N10 .contents-container { position: relative; height: 58rem; padding: 0 2.4rem; }
+.glamping-N10 .contents-subvisual { width: calc(100% + 4.8rem); height: 100%; margin-left: -2.4rem; object-fit: cover; }
+.glamping-N10 .textset { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: calc(100% - 4.8rem); }
+.glamping-N10 .textset .textset-name { font-size: 2.4rem; line-height: 3.2rem; color: rgba(var(--white-rgb), 0.3); }
+.glamping-N10 .textset .textset-name+.textset-tit { margin-top: 0.8rem; font-size: 6.4rem; line-height: 7rem; color: var(--text-color5); }
+@media (max-width: 992px) {
+.glamping-N10 .contents-container { height: 50rem; }
+.glamping-N10 .textset .textset-name { font-size: 2rem; line-height: 2.6rem; }
+.glamping-N10 .textset .textset-name+.textset-tit { margin-top: 0.4rem; font-size: 4rem; line-height: 6rem; }
+}

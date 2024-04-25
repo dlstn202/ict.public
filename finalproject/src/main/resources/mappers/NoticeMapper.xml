@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ict.finalproject.dao.NoticeMapper">
+
+	<!-- 게시물 리스트 얻어오기 -->
+	<select id="selectList" resultType="notice">
+		select * from notice order by not_idx desc
+	</select>
+
+	<!-- 게시물 리스트 얻어오기(조회/페이징) -->
+	<select id="selectListMap" resultType="notice">
+		select * from
+		(
+			select *,rank() over(order by not_idx desc) as no from notice
+			<trim prefix="where" prefixOverrides="or">
+				<if test="name!=null">
+					mem_name like concat('%',#{name},'%')
+				</if>
+				<if test="subject!=null">
+					or not_title like concat('%',#{subject},'%')
+				</if>
+				<if test="content!=null">
+					or not_content like concat('%',#{content},'%')
+				</if>
+			</trim>
+
+			
+		) b
+		where no between #{start} and #{end}
+	</select>
+
+	<!-- 게시물 리스트 얻어오기(조회/페이징)(삭제된게시글 x) -->
+	<select id="selectListMapDelNo" resultType="notice">
+		select * from
+		(
+			select *, rank() over(order by not_idx desc) as no from notice
+			where not_del_yn = 'n'
+			<trim prefix="AND (" suffix=")" prefixOverrides="or">
+				<if test="subject != null">
+					or not_title like concat('%', #{subject}, '%')
+				</if>
+				<if test="content != null">
+					or not_content like concat('%', #{content}, '%')
+				</if>
+			</trim>
+			order by not_emergency_yn desc
+		) b
+		where no between #{start} and #{end}
+	</select>
+
+	<!-- 검색 게시물수 얻어오기 -->
+	<select id="selectRowTotal" parameterType="Map" resultType="int">
+		select ifnull(count(*),0) from notice
+		<trim prefix="where" prefixOverrides="or">
+		  <if test="name!=null">
+			  mem_name like concat('%',#{name},'%')
+		  </if>
+		  <if test="subject!=null">
+			  or not_title like concat('%',#{subject},'%')
+		  </if>
+		  <if test="content!=null">
+			  or not_content like concat('%',#{content},'%')
+		  </if>	  
+	  </trim>
+	</select>
+
+	<!-- 검색 게시물수 얻어오기 삭제된 게시글은 안불러옴-->
+	<select id="selectRowTotalDelNo" parameterType="Map" resultType="int">
+		select ifnull(count(*),0) from notice
+		where not_del_yn = 'n'
+		<trim prefix="AND (" suffix=")" prefixOverrides="or">
+			<if test="subject != null">
+				or not_title like concat('%', #{subject}, '%')
+				
+			</if>
+			<if test="content != null">
+				or not_content like concat('%', #{content}, '%')
+			</if>
+		</trim>
+	  
+	</select>
+
+	<!-- 게시물 하나 얻어오기 -->
+	<select id="selectOne" parameterType="int" resultMap="notice_map">
+		select * from notice where not_idx = #{not_idx}
+	</select>
+
+	<!-- 다른 테이블을 리스트화 시켜서 넘기는것
+	 -->
+
+	<resultMap type="notice" id="notice_map">
+		<result property="not_idx" column="not_idx"/> 
+		
+		<collection property="file_list" 
+					column="not_idx=not_idx"
+					select="file_list_not_idx"/>
+	</resultMap>
+
+	<select id="file_list_not_idx" resultType="notice_file">
+		select * from notice_file where not_idx = #{not_idx}
+	</select>
+
+	<!-- 전체게시물수 얻어오기 -->
+	<select id="rowTotal" resultType="int">
+		select ifnull(count(*),0) from notice
+	</select>
+
+	<!-- idx 얻어오기 -->
+	<select id="not_idx">
+		select ifnull(max(not_idx),0)+1 from notice
+	</select>
+
+	<insert id="insert" parameterType="notice">
+		insert into notice values(
+			#{not_idx},#{mem_idx},#{mem_name},#{not_emergency_yn},#{not_public},#{not_title},#{not_content},now(),'n',null,'n',null,#{not_file_yn}
+		)
+	</insert>
+
+	<update id="update" parameterType="notice">
+		update notice set
+		not_idx = #{not_idx},mem_idx = #{mem_idx},not_emergency_yn = #{not_emergency_yn},
+		not_public = #{not_public},not_title = #{not_title},not_content = #{not_content},
+		not_modify_yn = 'y',not_modifydate = now(),not_file_yn = #{not_file_yn}
+		where not_idx = #{not_idx}
+	</update>
+
+	<update id="delete" parameterType="int">
+		update notice set not_del_yn = 'y',not_deldate = now() where not_idx = #{not_idx}
+	</update>
+
+
+	
+	
+
+
+
+</mapper>

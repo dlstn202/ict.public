@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ict.finalproject.dao.ReviewKeepMapper">
+
+    <!-- 회원별 좋아요 내역  -->
+	<select id="selectList" resultType="review_keep">
+		select * from review_keep order by rev_idx desc
+	</select>
+
+	<!-- 좋아요 눌럿는지 안눌럿는지 -->
+	<select id="selectOneCheck" parameterType="Map" resultType="review_keep">
+		select * from review_keep where mem_idx = #{mem_idx} and contentId = #{ contentId }
+		
+	</select>
+	
+	<!-- 좋아요 추가 -->
+	<insert id="insert" parameterType="review_keep">
+		insert into review_keep values(#{ mem_idx }, #{ rev_idx })
+	</insert>
+	
+	<!-- 좋아요 삭제 -->
+ 	<delete id="delete"  parameterType="review_keep">
+ 		delete from review_keep where rev_idx = #{ rev_idx } and mem_idx = #{ mem_idx } 
+ 	</delete>
+	
+</mapper>

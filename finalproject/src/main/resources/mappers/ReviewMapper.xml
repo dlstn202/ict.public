@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ict.finalproject.dao.ReviewMapper">
+
+	<!-- /전체 조회 -->
+	<select id="selectList"  resultMap="review_map">
+		select * from review order by rev_idx desc
+	</select>
+
+	<select id="selectListMap" parameterType="Map" resultMap="review_map">
+		SELECT *,
+		CASE
+			WHEN EXISTS(
+				SELECT 1 
+				FROM review_keep 
+				WHERE review_keep.rev_idx = review.rev_idx AND mem_idx = #{mem_idx}
+			) THEN 1
+			ELSE 0
+		END AS hea
+		FROM review where contentId = #{ contentId } order by rev_idx desc
+	  </select>
+
+
+	<!-- 전체/회원 조회 -->
+	<select id="selectListMember" parameterType="int" resultMap="review_map">
+		select * from review where mem_idx = #{ mem_idx } order by rev_idx desc
+	</select>
+
+
+	<!-- 리뷰개수 -->
+	<select id="selectReviewCount" resultType="double">
+		SELECT COUNT(*) FROM review WHERE contentId = #{ contentId }
+	</select>
+
+	<!-- 리뷰합계 -->
+	<select id="selectReviewSum" resultType="double">
+		SELECT COALESCE(SUM(rev_grade), 0.0) FROM review WHERE contentId = #{contentId}
+	</select>
+
+	<!-- idx 얻어오기 -->
+	<select id="rev_idx" resultType="int">
+		select ifnull(max(rev_idx), 0) + 1 from review
+	</select>
+
+	<!-- rev_idx 얻어오기 -->
+	<select id="mem_idx" resultType="int">
+		select * from review where mem_idx = #{ mem_idx } order by rev_idx desc
+	</select>
+
+	<!-- /리뷰 등록 -->
+	<insert id="review_insert" parameterType="review">
+		insert into review ( mem_idx, contentId, rev_date,rev_content,rev_grade,facltNm,addr1,mapY,mapX,mem_id,photo_yn)
+		values(					  #{ mem_idx },
+								#{ contentId },
+								now(),
+								#{ rev_content },
+								#{ rev_grade },
+								#{ facltNm},
+								#{ addr1 },
+								#{ mapY },
+								#{ mapX },
+								#{ mem_id },
+								#{ photo_yn }
+								)
+	</insert>
+
+	<!-- 리뷰 하나 얻어오기  + 사진 정보 가져오기 -->
+			<select id="selectOne" parameterType="int" resultMap="review_map">
+				select * from review where rev_idx = #{rev_idx} 
+			</select>
+
+			<resultMap type="review" id="review_map">
+				<result property="rev_idx" column="rev_idx"/> 
+				
+				<collection property="photo_list" 
+							column="rev_idx=rev_idx"
+							select="photo_list_pho_idx"/>
+			</resultMap>
+
+			<select id="photo_list_pho_idx" resultType="photo">
+				select * from photo where rev_idx = #{rev_idx} and pho_del_yn = 'n'
+			</select>
+
+	<!-- /후기 삭제 -->
+	<delete id="review_delete" parameterType="int">
+		delete from review where rev_idx = #{ rev_idx }
+	</delete>
+
+	<!-- /후기 수정 -->
+	<update id="review_update" parameterType="review">
+		update review set
+		rev_content=#{ rev_content },rev_grade=#{rev_grade},photo_yn=#{ photo_yn }
+		where rev_idx = #{ rev_idx }
+	</update>
+
+	<!-- 리뷰 좋아요 갯수 수정 -->
+	<update id="updateHeaNum" parameterType="review">
+		update review set
+		hea_num=#{ hea_num }
+		where rev_idx = #{ rev_idx }
+	</update>
+
+	</mapper>

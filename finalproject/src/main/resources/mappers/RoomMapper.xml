@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ict.finalproject.dao.RoomMapper">
+
+    <!-- idx 얻어오기 -->
+	<select id="room_idx">
+		select ifnull(max(room_idx),0)+1 from room
+	</select>
+
+	<select id="selectListBizrno" parameterType="String" resultMap="room_map">
+		select * from room where bizrno = #{bizrno}
+	</select>
+
+	<select id="selectOneRoomIdx" parameterType="int" resultMap="room_map">
+		select * from room where room_idx = #{room_idx}
+	</select>
+
+	<select id="selectBizrno" parameterType="String" resultMap="room_map">
+		select * from room where bizrno = #{bizrno}
+	</select>
+
+	<resultMap type="room" id="room_map">
+		<result property="room_idx" column="room_idx"/> 
+		
+		<collection property="photo_list" 
+					column="room_idx=room_idx"
+					select="photo_list_room_idx"/>
+
+		<collection property="fee_list" 
+					column="room_idx=room_idx"
+					select="fee_list_room_idx"/>
+	</resultMap>
+
+	<select id="photo_list_room_idx" resultType="photo">
+		select * from photo where room_idx = #{room_idx} and pho_del_yn = 'n'
+	</select>
+
+	<select id="fee_list_room_idx" resultType="fee">
+		select * from fee where room_idx = #{room_idx}
+	</select>
+
+
+
+
+
+	<insert id="insert" parameterType="room">
+		insert into room values(
+		#{room_idx},#{mem_idx},#{bizrno},#{room_name},#{room_min},#{room_max},#{room_in},#{room_out},#{room_etc}
+		)
+	</insert>
+
+	<update id="update" parameterType="room">
+		update room set
+		mem_idx = #{mem_idx},room_name = #{room_name},room_min = #{room_min},room_max = #{room_max},room_in = #{room_in},room_out = #{room_out},room_etc = #{room_etc}
+		where room_idx = #{room_idx}
+	</update>
+
+	<delete id="delete" parameterType="int">
+		delete from room where room_idx = #{room_idx}
+	</delete>
+
+</mapper>

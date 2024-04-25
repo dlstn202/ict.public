@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ict.finalproject.dao.MemberMapper">
+
+    <select id="selectList" resultType="member">
+		select * from member_common
+	</select>
+
+	<select id="selectOneManager" parameterType="int" resultType="member">
+		select * from member_manager_view where mem_idx = #{mem_idx}
+	</select>
+
+	<!-- 로그인용 -->
+	<select id="selectOneManagerId" parameterType="String" resultType="member">
+		select * from member_manager_view where mem_id = #{mem_id}
+	</select>
+
+	<!-- 로그인용 -->
+	<select id="selectOneCeoId" parameterType="String" resultMap="member_ceo_map">
+		select * from mem_ceo_view where mem_id = #{mem_id}
+	</select>
+
+	<resultMap type="member" id="member_ceo_map">
+		<result property="mem_idx" column="mem_idx"/> 
+		
+		<collection property="camp_ceo_list" 
+					column="mem_idx=mem_idx"
+					select="camp_ceo_list_mem_idx"/>
+	</resultMap>
+
+	<select id="camp_ceo_list_mem_idx" resultType="camp_ceo">
+		select * from camp_ceo where mem_idx = #{mem_idx}
+	</select>
+
+	<!-- 로그인용 -->
+	<select id="selectOneGeneralId" parameterType="String" resultMap="member_general_map">
+		select * from mem_general_view where mem_id = #{mem_id}
+	</select>
+
+	<select id="selectOneMemId" parameterType="String" resultType="member">
+		select * from member_common where mem_id = #{mem_id}
+	</select>
+
+	<resultMap type="member" id="member_general_map">
+		<result property="mem_idx" column="mem_idx"/> 
+		
+		<collection property="prefer_list" 
+					column="mem_idx=mem_idx"
+					select="prefer_list_mem_idx"/>
+	</resultMap>
+
+	<select id="prefer_list_mem_idx" resultType="prefer">
+		select * from prefer where mem_idx = #{mem_idx}
+	</select>
+
+	<select id="selectOneMemEmail" parameterType="String" resultType="member">
+		select * from member_common where mem_email = #{mem_email}
+	</select>
+
+	<select id="selectOneNameEmail" parameterType="member" resultType="member">
+		select * from member_common where mem_email = #{mem_email} and mem_name=#{mem_name}
+	 </select>
+
+	<select id="selectOneNaIdEm" parameterType="member" resultType="member">
+		select * from member_common where mem_email = #{mem_email} and mem_name=#{mem_name} and mem_id=#{mem_id}
+	 </select>
+  
+	
+	<select id="selectOneGoogleId" parameterType="String" resultMap="member_general_map">
+		select * from mem_general_view where mem_google = #{mem_google}
+	</select>
+	<select id="selectOneKakaoId" parameterType="String" resultMap="member_general_map">
+		select * from mem_general_view where mem_kakao = #{mem_kakao}
+	</select>
+	<select id="selectOneNaverId" parameterType="String" resultMap="member_general_map">
+		select * from mem_general_view where mem_naver = #{mem_naver}
+	</select>
+
+
+
+	<insert id="insertCommon" useGeneratedKeys="true" keyProperty="mem_idx" parameterType="member">
+		insert into member_common ( mem_id, mem_name, mem_pwd, mem_email, mem_grade, mem_tel, mem_joindate, mem_ip)
+		values( #{ mem_id }, 
+				#{ mem_name }, 
+				#{ mem_pwd }, 
+				#{ mem_email }, 
+				#{ mem_grade }, 
+				#{ mem_tel }, 
+				now(), 
+				#{ mem_ip } 
+		)
+	</insert>
+
+	<update id="updateCommon" parameterType="member">
+		update member_common set 
+			mem_pwd = #{ mem_pwd },
+			mem_name = #{ mem_name },
+			mem_email = #{ mem_email },
+			mem_tel = #{ mem_tel }
+		where mem_idx = #{ mem_idx }
+	</update>
+
+	<update id="deleteCommon" parameterType="int">
+		update member_common set
+			mem_email = 'n',
+			mem_quit_yn = 'y',
+			mem_quitdate = now()
+		where mem_idx = #{ mem_idx }
+	</update>
+
+	<update id="updatePwd" parameterType="member">
+		update member_common set
+			mem_pwd = #{mem_pwd}
+		where mem_id = #{ mem_id }
+	</update>
+
+
+
+
+
+</mapper>

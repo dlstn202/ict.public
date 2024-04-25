@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ict.finalproject.dao.MemberManagerMapper">
+
+	
+	<!-- 관리자 목록 -->
+	<select id="selectListManager" resultType="member">
+		select * from member_manager_view where mem_grade = 'manager'
+	</select>
+
+	<insert id="insertManager" parameterType="member">
+		insert into member_manager ( mem_idx, not_man_yn, mem_man_yn, rep_man_yn, qna_man_yn )
+		values( #{ mem_idx }, 
+				#{ not_man_yn }, 
+				#{ mem_man_yn }, 
+				#{ rep_man_yn }, 
+				#{ qna_man_yn }
+		)
+	</insert>
+
+	<update id="updateManager" parameterType="member">
+		update member_manager set
+			not_man_yn = #{ not_man_yn },
+			mem_man_yn = #{ mem_man_yn },
+			rep_man_yn = #{ rep_man_yn },
+			qna_man_yn = #{ qna_man_yn }
+		where mem_idx = #{ mem_idx }
+	</update>
+
+	<update id="deleteManager" parameterType="member">
+		update member_manager set
+			not_man_yn = 'n',
+			mem_man_yn = 'n',
+			rep_man_yn = 'n',
+			qna_man_yn = 'n'
+		where mem_idx = #{ mem_idx }
+	</update>
+
+    
+</mapper>

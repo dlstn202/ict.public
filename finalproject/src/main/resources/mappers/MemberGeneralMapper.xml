@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ict.finalproject.dao.MemberGeneralMapper">
+
+	<select id="selectList" parameterType="member">
+		select * from mem_general_view
+	</select>
+
+	<insert id="insertGeneral" parameterType="member">
+		insert into member_general ( mem_idx, agree1_yn, agree2_yn, agree3_yn, mem_kakao, mem_naver, mem_google )
+		values( #{ mem_idx }, 
+				#{ agree1_yn }, 
+				#{ agree2_yn }, 
+				#{ agree3_yn }, 
+				#{ mem_kakao }, 
+				#{ mem_naver }, 
+				#{ mem_google } 
+		)
+	</insert>
+
+	<update id="updateGeneral" parameterType="member">
+		update member_general set
+			agree3_yn = #{ agree3_yn },
+			mem_photo = #{ mem_photo }
+		where mem_idx = #{ mem_idx }
+	</update>
+
+	<update id="updateGeneralM" parameterType="member">
+		update member_general set
+        mem_reserv_yn = #{mem_reserv_yn},
+        mem_review_yn = #{mem_review_yn},
+        mem_reservdate = CASE 
+                            WHEN #{mem_reserv_yn} = 'y' THEN NULL 
+                            WHEN #{mem_reserv_yn} != 'y' AND mem_reservdate IS NOT NULL THEN mem_reservdate 
+                            ELSE now() 
+                         END,
+		mem_reviewdate = CASE 
+                            WHEN #{mem_review_yn} = 'y' THEN NULL 
+                            WHEN #{mem_review_yn} != 'y' AND mem_reviewdate IS NOT NULL THEN mem_reviewdate 
+                            ELSE now() 
+                         END
+    where mem_idx = #{mem_idx}
+	</update>
+
+	<update id="deleteGeneral" parameterType="int">
+		update member_general set
+			mem_kakao = null,
+			mem_naver = null,
+			mem_google = null,
+			mem_photo = null
+		where mem_idx = #{ mem_idx }
+	</update>
+
+	<!-- <delete id="deleteGeneral" parameterType="int">
+		delete from member_general where mem_idx = #{ mem_idx } 
+	</delete> -->
+
+	<update id="deleteSns" parameterType="Map">
+		update member_general set
+			<if test="naver!=null">
+				mem_naver = null
+			</if>
+			<if test="kakao!=null">
+				mem_kakao = null
+			</if>
+			<if test="google!=null">
+				mem_google = null
+			</if>
+		where mem_idx = #{ mem_idx }
+	</update>
+
+	<update id="insertSns" parameterType="Map">
+		update member_general set
+			<if test="naver!=null">
+				mem_naver = #{naver}
+			</if>
+			<if test="kakao!=null">
+				mem_kakao = #{kakao}
+			</if>
+			<if test="google!=null">
+				mem_google = #{google}
+			</if>
+		where mem_idx = #{ mem_idx }
+	</update>
+	
+</mapper>

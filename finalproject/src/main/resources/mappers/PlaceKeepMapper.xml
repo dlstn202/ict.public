@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ict.finalproject.dao.PlaceKeepMapper">
+
+
+    <!-- 회원별 저장 내역  -->
+	<select id="selectList" parameterType="int" resultMap="camp_keep_map">
+		select *,rank() over(order by pl_keep_idx desc) as no from place_keep where mem_idx = #{ mem_idx }
+	</select>
+
+	<select id="selectOneCheck" parameterType="Map" resultType="place_keep">
+		select * from place_keep where mem_idx = #{mem_idx} and contentId = #{ contentId }
+	</select>
+	
+	<!-- 저장 추가 -->
+	<insert id="insert" parameterType="place_keep">
+		insert into place_keep values(null, #{ contentId }, #{ mem_idx }, #{ mapY }, #{ mapX },now(),#{ facltNm } )
+	</insert>
+	
+	<!-- 저장 삭제 -->
+ 	<delete id="delete"  parameterType="Map">
+ 		delete from place_keep where contentId = #{ contentId } and mem_idx = #{ mem_idx } 
+ 	</delete>
+
+    <!-- Camp -->
+
+	<resultMap type="place_keep" id="camp_keep_map">
+		<result property="contentId" column="contentId"/> 
+		
+		<association property="camp_vo" column="contentId" select="camp_vo_contentId"/>
+	</resultMap>
+
+	<select id="camp_vo_contentId" resultType="camp">
+		select * from camp where contentId = #{ contentId }
+	</select>
+  
+
+</mapper>

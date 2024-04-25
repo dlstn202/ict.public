@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ict.finalproject.dao.CampMapper">
+	<!-- 전체 리스트 -->
+    <select id="selectList" resultType="camp">
+		select * from camp
+	</select>
+	<!-- 컨텐츠 아이디 하나에대한 캠핑장 정보 -->
+	<select id="selectOne" parameterType="int" resultType="camp">
+		select * from camp where contentId=#{contentId}
+	</select>
+
+	<select id="selectOneBizrnoVo" parameterType="String" resultType="camp">
+		select * from camp where bizrno=#{bizrno}
+	</select>
+	<!-- 시군구 리스트 -->
+	<select id="selectListSi" resultType="camp">
+		select * from sigungunm_count_view
+	</select>
+
+	<!-- 시에 해당하는 시군구 리스트 -->
+	<select id="selectOneListSi" parameterType="String" resultType="camp">
+		select * from sigungunm_count_view where doNm = #{doNm}
+	</select>
+
+	<!-- 도 리스트 -->
+	<select id="selectListDo" resultType="camp">
+		select * from donm_count_view
+	</select>
+
+	<!-- 지역필터 적용한 리스트 -->
+	<select id="selectByLocal" parameterType="String" resultType="camp">
+		select * from  camp 
+		<where>
+			<if test="doNm != null and doNm != ''">
+				AND doNm = #{doNm}
+			</if>
+			<if test="sigunguNm != null and sigunguNm != ''and sigunguNm !='전체'">
+				AND sigunguNm = #{sigunguNm}
+			</if>
+			
+		</where> 
+	</select>
+
+	<!-- 조건필터를 적용한 리스트 -->
+		<select id="selectByFilter" parameterType="map" resultType="camp">
+			select * from camp
+			<trim prefix="where" prefixOverrides="and">
+				<if test="doNm != null">
+					doNm like concat('%',#{doNm},'%')
+				</if>
+				<if test="sigunguNm != null">
+					and sigunguNm like concat('%',#{sigunguNm},'%')
+				</if>
+				<if test="induty != null ">
+					and 
+					  <foreach item="item" collection="induty" separator="and">
+						induty like concat('%',#{item},'%')
+					  </foreach>
+					
+				</if>
+				<if test="lctCl != null ">
+					and 
+					  <foreach item="item" collection="lctCl" separator="and">
+						lctCl like concat('%',#{item},'%')
+					  </foreach>
+					
+				</if>
+				<if test="SiteCo != null">
+					and 
+					  <foreach item="item" collection="SiteCo" separator="and">
+						${item} > 0
+						<!-- $는 단순 치환 -->
+					  </foreach>
+					
+				</if>
+				<if test="sbrsCl != null ">
+					and 
+					  <foreach item="item" collection="sbrsCl" separator="and">
+						sbrsCl like concat('%',#{item},'%')
+					  </foreach>
+					
+				</if>
+
+			</trim>
+
+		</select>
+
+	<!-- 사업자번호 검색 -->
+	<select id="selectOneBizrno" parameterType="String" resultType="String">
+		select bizrno from camp where bizrno = #{bizrno}
+	</select>
+
+	<!-- 전체게시물수 얻어오기 -->
+	<select id="rowTotal" resultType="int">
+		select ifnull(count(*),0) from camp
+	</select>
+
+	<!-- 추가 -->
+	<insert id="camp_insert" parameterType="camp">
+		insert into camp values(
+			#{contentId},#{mem_idx},#{facltNm},#{lineIntro},#{intro},#{trsagntNo},#{bizrno},#{facltDivNm},#{hvofBgnde},#{hvofEnddle},#{featureNm},#{induty},
+			#{lctCl},#{doNm},#{sigunguNm},#{zipcode},#{addr1},#{addr2},#{mapX},#{mapY},#{tel},#{homepage},#{resveUrl},#{resveCl},#{gnrlSiteCo},#{autoSiteCo},
+			#{glampSiteCo},#{caravSiteCo},#{siteBottomCl1},#{siteBottomCl2},#{siteBottomCl3},#{siteBottomCl4},#{siteBottomCl5},#{tooltip},#{glampInnerFclty},#{caravInnerFclty},
+			#{toiletCo},#{swrmCo},#{wtrplCo},#{brazierCl},#{sbrsCl},#{sbrsEtc},#{posblFcltyCl},#{exprnProgrmAt},#{exprnProgrm},#{themaEnvrnCl},#{eqpmnLendCl},#{animalCmgCl},#{firstImageUrl},
+			now(),now(),#{cam_reser_yn},#{cam_reserdate}
+		)
+	</insert>
+
+	<!-- 업데이트 -->
+	<update id="camp_update" parameterType="camp">
+		update camp set
+			bizrno = #{bizrno},trsagntNo = #{trsagntNo},hvofBgnde = #{hvofBgnde},hvofEnddle = #{hvofEnddle},induty = #{induty},facltNm = #{facltNm},
+			tel = #{tel},addr1 = #{addr1},addr2 = #{addr2},lineIntro = #{lineIntro},featureNm = #{featureNm},
+			homepage = #{homepage},resveCl = #{resveCl},resveUrl = #{resveUrl},lctCl = #{lctCl},gnrlSiteCo = #{gnrlSiteCo},autoSiteCo = #{autoSiteCo},
+			glampSiteCo = #{glampSiteCo},caravSiteCo = #{caravSiteCo},glampInnerFclty = #{glampInnerFclty},caravInnerFclty = #{caravInnerFclty},
+			eqpmnLendCl = #{eqpmnLendCl},toiletCo = #{toiletCo},swrmCo = #{swrmCo},wtrplCo = #{wtrplCo},sbrsCl = #{sbrsCl},sbrsEtc = #{sbrsEtc},
+			exprnProgrmAt = #{exprnProgrmAt},exprnProgrm = #{exprnProgrm},themaEnvrnCl = #{themaEnvrnCl},brazierCl = #{brazierCl},animalCmgCl = #{animalCmgCl},
+			siteBottomCl1 = #{siteBottomCl1},siteBottomCl2 = #{siteBottomCl2},siteBottomCl3 = #{siteBottomCl3},siteBottomCl4 = #{siteBottomCl4},siteBottomCl5 = #{siteBottomCl5}
+		where bizrno = #{bizrno}
+	</update>
+
+
+</mapper>

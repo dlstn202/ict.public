@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ict.finalproject.dao.FeeMapper">
+
+    <select id="selectList" parameterType="int" resultType="fee">
+        select * from fee where room_idx = #{room_idx}
+    </select>
+
+    <select id="selectOneIdx" parameterType="int" resultType="fee">
+        select * from fee where fee_idx = #{fee_idx}
+    </select>
+
+    <select id="selectListVo" parameterType="fee" resultType="fee">
+        select * from fee where fee_peak_yn = #{fee_peak_yn} and fee_weekend_yn = #{fee_weekend_yn} and room_idx = #{room_idx}
+    </select>
+
+    <insert id="insert" parameterType="fee">
+        insert into fee values(
+        null,#{room_idx},#{mem_idx},#{fee_peak_yn},#{fee_weekend_yn},#{fee_adult},#{fee_child},#{fee_infant}
+        )
+    </insert>
+
+    <update id="update" parameterType="fee">
+        update fee set
+        room_idx = #{room_idx},mem_idx = #{mem_idx},fee_peak_yn = #{fee_peak_yn},fee_weekend_yn = #{fee_weekend_yn},fee_adult = #{fee_adult},fee_child = #{fee_child},fee_infant = #{fee_infant}
+        where fee_idx = #{fee_idx}
+
+    </update>
+
+    <delete id="delete" parameterType="int">
+        delete from fee where fee_idx = #{fee_idx}
+    </delete>
+
+    <delete id="deleteRoom_idx" parameterType="int">
+        delete from fee where room_idx = #{room_idx}
+    </delete>
+
+</mapper>

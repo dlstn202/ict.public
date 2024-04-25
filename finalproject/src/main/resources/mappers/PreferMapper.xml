@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ict.finalproject.dao.PreferMapper">
+
+    <select id="selectList" resultType="prefer">
+		select * from prefer
+	</select>
+
+    <select id="selectListMemIdx" parameterType="int" resultType="prefer">
+		select * from prefer where mem_idx = #{ mem_idx }
+	</select>
+
+    <select id="selectOnePreIdx" parameterType="int" resultType="prefer">
+		select * from prefer where pre_idx = #{ pre_idx }
+	</select>
+
+    <insert id="insert" parameterType="prefer">
+		insert into prefer ( pre_si, pre_gun, mem_idx)
+		values( #{ pre_si }, 
+				#{ pre_gun }, 
+				#{ mem_idx }
+		)
+	</insert>
+
+	<update id="update" parameterType="prefer">
+		update prefer set
+			pre_si = #{ pre_si },
+			pre_gun = #{ pre_gun }
+		where pre_idx = #{ pre_idx }
+	</update>
+
+	<!-- <delete id="delete" parameterType="int">
+		delete from prefer where mem_idx = #{ mem_idx }
+	</delete> -->
+
+
+</mapper>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ict.finalproject.dao.PhotoMapper">
+
+	<!-- 포토 전체리스트  -->
+	<select id="selectList" resultType="photo">
+		select * from photo order by pho_idx desc
+	</select>
+
+	<!-- 사진 idx 얻어오기 -->	
+	<select id="selectList_pho_idx" parameterType="int" resultType="photo">
+		select * from photo where rev_idx = #{rev_idx}
+	</select>
+
+	<!-- 객실 idx에대한 사진 리스트 -->	
+	<select id="selectListRoom" parameterType="int" resultType="photo">
+		select * from photo where room_idx = #{room_idx}
+	</select>
+
+	<insert id="photo_insert" parameterType="photo">
+		insert into photo values(
+			#{ pho_idx },#{ mem_idx },#{ rev_idx },#{ bizrno },#{ room_idx },#{ pho_name },now(),'n',null
+		)
+	</insert>
+
+	<update id="photo_update" parameterType="photo">
+		update photo set
+		mem_idx = #{ mem_idx }, rev_idx = #{ rev_idx }, bizrno = #{ bizrno }, room_idx = #{ room_idx },pho_name = #{ pho_name } where pho_idx = #{ pho_idx }
+	</update>
+
+	<update id="photo_delete" parameterType="int">
+		update photo set pho_del_yn = 'y', pho_deldate = now() where pho_idx = #{pho_idx}
+	</update>
+
+	<update id="photo_delete_room" parameterType="int">
+		update photo set pho_del_yn = 'y', pho_deldate = now() where room_idx = #{room_idx}
+	</update>
+
+
+
+</mapper>
